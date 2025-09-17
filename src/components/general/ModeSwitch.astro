@@ -4,7 +4,7 @@
     viewBox="0 0 24 24"
     width="512"
     xmlns="http://www.w3.org/2000/svg"
-    class="w-8 h-auto fill-pacamara-secondary transition-all duration-300 hover:fill-pacamara-accent dark:fill-white dark:hover:fill-pacamara-accent"
+    class="w-8 h-auto fill-cosmos-secondary transition-all duration-300 hover:fill-cosmos-accent dark:fill-white dark:hover:fill-cosmos-accent"
   >
     <path
       d="m12 18a6 6 0 1 1 6-6 6 6 0 0 1 -6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0 -4-4z"
@@ -26,18 +26,16 @@
 <script>
   const setDarkModeButton = () => {
     const button = document.querySelector("#mode_switcher");
-    button.addEventListener('click', function(){
-      document.documentElement.classList.toggle('dark');
+    button?.addEventListener("click", function () {
+      const classes = document.documentElement.classList;
 
-      if ( document.documentElement.classList.contains('dark') ) {
-        localStorage.darkMode = 'true'
-      } else {
-        localStorage.darkMode = 'false'
-      }
+      classes.toggle("dark");
+      localStorage.darkMode = classes.contains("dark");
     });
-  }
+  };
 
   setDarkModeButton();
+
   // Runs on view transitions navigation
-  document.addEventListener('astro:after-swap', setDarkModeButton);
+  document.addEventListener("astro:after-swap", setDarkModeButton);
 </script>

@@ -1,0 +1,30 @@
+---
+import { Image } from "astro:assets";
+import type { PostCollectionEntry } from "../../utils/types";
+import { getHeroImage, getAlt } from "../../utils/images";
+import { getHeroConfig } from "../../utils/hero";
+
+const { entry } = Astro.props as { entry: PostCollectionEntry };
+const src = getHeroImage(entry);
+const alt = getAlt(entry);
+const cfg = getHeroConfig(entry);
+---
+
+{
+  src && (
+    <div class={cfg.wrapperClass}>
+      <Image
+        src={src}
+        alt={alt}
+        class={cfg.imgClass}
+        sizes={cfg.sizes}
+        widths={cfg.widths}
+        format="webp"
+        quality={97}
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
+    </div>
+  )
+}

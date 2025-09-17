@@ -1,44 +1,78 @@
 ---
-import { Image } from 'astro:assets'
+import { Image } from "astro:assets";
+import { getEntry, render } from "astro:content";
+import dylan from "../../assets/dylan.jpg";
+import california from "../../assets/slide-1.jpg";
+import rosette from "../../assets/slide-2.jpg";
+import pinwheel from "../../assets/slide-3.jpg";
+import chaos from "../../assets/slide-4.jpg";
 
-import logoImage from '../../assets/logo.jpg';
+interface Slide {
+  src: ImageMetadata;
+  alt: string;
+  extraClass?: string;
+}
 
-import slide1 from '../../assets/slide-1.jpg';
-import slide2 from '../../assets/slide-2.jpg';
-import slide3 from '../../assets/slide-3.jpg';
-import slide4 from '../../assets/slide-4.jpg';
-import slide5 from '../../assets/slide-5.jpg';
+const slides: Slide[] = [
+  {
+    src: rosette,
+    alt: "Rosette Nebula in false color",
+    extraClass: "rotate-2",
+  },
+  {
+    src: pinwheel,
+    alt: "Pinwheel Galaxy in monochrome",
+    extraClass: "-rotate-1",
+  },
+  { src: california, alt: "California in false color", extraClass: "rotate-1" },
+  {
+    src: chaos,
+    alt: "Phase space visualization of a chaotic optomechanical system",
+    extraClass: "-rotate-2",
+  },
+];
+
+const aboutPage = await getEntry("page", "about-me");
+
+const { Content } = aboutPage
+  ? await render(aboutPage)
+  : { Content: () => null };
 ---
-<section class="
-        container mx-auto max-w-screen-xl px-7 py-10
-        lg:min-h-[500px] content-center font-pacamara
-        prose lg:prose-xl
-        prose-headings:font-pacamara-space prose-headings:mt-5 prose-headings:text-pacamara-dark prose-headings:font-bold lg:prose-h1:text-7xl prose-h1:mt-0 prose-heading:transition-all prose-heading:duration-300  
-        prose-p:text-pacamara-primary/50 dark:prose-p:text-white/70 prose-p:mb-0 prose-p:transition-all prose-p:duration-300
-        prose-img:mt-0 prose-img:mb-0  
-        dark:prose-headings:text-white
-    ">
-    <Image src={logoImage} width={200} alt="" loading="eager" decoding="sync" class="relative w-[150px] lg:w-[220px] rounded-[15px] image-shine"  />
-    <p>
-        Aromatic brew, pure indulgence, exquisite satisfaction.
-    </p>
-    <h1><span class="gradient-underline"><span>Awaken your senses to the tantalizing allure of specialty coffee bliss.</span></span></h1>
+
+<section
+  class="container mx-auto max-w-screen-lg px-7 lg:min-h-[500px] content-center font-cosmos prose md:prose-xl prose-headings:font-cosmos-space prose-headings:mt-5 prose-headings:text-cosmos-dark prose-headings:font-bold lg:prose-h1:text-7xl prose-h1:mt-0 prose-heading:transition-all prose-heading:duration-300 prose-p:text-cosmos-primary/50 dark:prose-p:text-white/70 prose-p:mb-0 prose-p:transition-all prose-p:duration-300 prose-img:mt-0 prose-img:mb-0 dark:prose-headings:text-white"
+>
+  <div class="after:content-[''] after:block after:clear-both md:text-justify">
+    <div class="not-prose">
+      <Image
+        src={dylan}
+        width={200}
+        alt="A photo of Dylan"
+        loading="eager"
+        decoding="sync"
+        class="block w-40 sm:w-[200px] rounded-[15px] float-left mr-4"
+      />
+    </div>
+    <Content />
+  </div>
 </section>
 
-<section class="my-10 flex justify-center gap-5 overflow-hidden py-4 sm:gap-10">
-    <div class="relative w-44 flex-none overflow-hidden bg-white dark:bg-pacamara-dark sm:w-3/12 rotate-2 rounded-[15px]">
-        <Image src={slide1} width={800} alt="" class="object-cover image-shine h-[200px] md:h-[500px]" />
-    </div>
-    <div class="relative w-44 flex-none overflow-hidden bg-white dark:bg-pacamara-dark sm:w-3/12 -rotate-2 rounded-[15px]">
-        <Image src={slide2} width={800} alt="" class="object-cover image-shine h-[200px] md:h-[500px]" />
-    </div>
-    <div class="relative w-44 flex-none overflow-hidden bg-white dark:bg-pacamara-dark sm:w-3/12 rotate-2 rounded-[15px]">
-        <Image src={slide3} width={800} alt="" class="object-cover image-shine h-[200px] md:h-[500px]" />
-    </div>
-    <div class="relative w-44 flex-none overflow-hidden bg-white dark:bg-pacamara-dark sm:w-3/12  rotate-2 rounded-[15px]">
-        <Image src={slide4} width={800} alt="" class="object-cover image-shine h-[200px] md:h-[500px]" />
-    </div>
-    <div class="relative w-44 flex-none overflow-hidden bg-white dark:bg-pacamara-dark sm:w-3/12 -rotate-2 rounded-[15px]">
-        <Image src={slide5} width={800} alt="" class="object-cover image-shine h-[200px] md:h-[500px]" />
-    </div>
+<section class="flex justify-center gap-5 sm:gap-10 overflow-hidden py-4">
+  {
+    slides.map((slide) => {
+      const classes = `relative w-28 sm:w-3/12 flex-none overflow-hidden dark:bg-cosmos-dark rounded-[15px] ${
+        slide.extraClass ?? ""
+      }`;
+      return (
+        <div class={classes}>
+          <Image
+            src={slide.src}
+            width={800}
+            alt={slide.alt}
+            class="object-cover h-[200px] md:h-[500px]"
+          />
+        </div>
+      );
+    })
+  }
 </section>

@@ -1,0 +1,58 @@
+---
+import { getCollection, getEntry, type CollectionEntry } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import PostLayout from "../../../../layouts/PostLayout.astro";
+import {
+  createSeriesInfoGetter,
+  isPubliclyVisible,
+  loadSeriesCollections,
+} from "../../../../utils/post";
+
+export const getStaticPaths = (async () => {
+  const all = await getCollection("seriesPosts", isPubliclyVisible);
+
+  return all.map((e) => {
+    const parts = e.id.split("/");
+    const series = parts[0];
+    if (!series) {
+      throw new Error(`Unexpected series id format: ${e.id}`);
+    }
+
+    // Derive the part slug robustly for both "<part>.mdx" and "<part>/index.mdx"
+    const last = parts[parts.length - 1];
+    const idBase = /^index\.(md|mdx)$/i.test(last)
+      ? parts[parts.length - 2]
+      : last.replace(/\.(md|mdx)$/i, "");
+    if (!idBase) {
+      throw new Error(`Unable to derive part slug from id: ${e.id}`);
+    }
+
+    return {
+      params: { series, id: idBase },
+      props: { id: e.id },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { series, id: partId } = Astro.params as { series: string; id: string };
+if (!series || !partId) {
+  throw new Error("Missing required route params for series entry");
+}
+
+const { id } = Astro.props as { id: string };
+
+const entry = (await getEntry("seriesPosts", id)) as
+  | CollectionEntry<"seriesPosts">
+  | undefined;
+if (!entry) {
+  throw new Error(
+    `Series entry not found: id=${id} (series=${series} part=${partId})`
+  );
+}
+
+const { allSeriesPosts, allSeriesMeta } = await loadSeriesCollections();
+const getSeriesInfo = createSeriesInfoGetter(allSeriesPosts, allSeriesMeta);
+const seriesInfo = getSeriesInfo(entry);
+---
+
+<PostLayout entry={entry} seriesInfo={seriesInfo} />

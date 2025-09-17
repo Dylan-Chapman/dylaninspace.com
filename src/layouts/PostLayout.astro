@@ -1,0 +1,58 @@
+---
+import Base from "./Base.astro";
+import EntryCard from "../components/general/EntryCard.astro";
+import RecentEntries from "../components/general/RecentEntries.astro";
+import {
+  createSeriesInfoGetter,
+  loadSeriesCollections,
+} from "../utils/post";
+import { getSeriesHref } from "../utils/paths";
+import { render } from "astro:content";
+import type { PostCollectionEntry, SeriesInfo } from "../utils/types";
+import HeroImage from "../components/general/HeroImage.astro";
+
+type Props = {
+  entry: PostCollectionEntry;
+  seriesInfo?: SeriesInfo;
+};
+
+const { entry, seriesInfo } = Astro.props;
+const { Content } = await render(entry);
+
+const { allSeriesPosts, allSeriesMeta } = await loadSeriesCollections();
+const getInfo = createSeriesInfoGetter(allSeriesPosts, allSeriesMeta);
+---
+
+<Base postData={entry}>
+  <article class="px-7 pt-10 mx-auto w-full">
+    <HeroImage entry={entry} />
+
+    <div class="lg:px-0 pt-10 mb-5 mx-auto prose lg:prose-xl dark:prose-invert">
+      <h1>{entry.data.title}</h1>
+      {
+        seriesInfo?.isSeries && seriesInfo.title && (
+          <p class="text-sm italic">
+            This post is part {seriesInfo.index} of {seriesInfo.planned} in the
+            series{" "}
+            <a href={getSeriesHref(seriesInfo.key)}>{seriesInfo.title}</a> -{" "}
+            {seriesInfo.published} published, {seriesInfo.upcoming} upcoming.
+          </p>
+        )
+      }
+      <Content />
+    </div>
+  </article>
+
+  {
+    entry.collection === "blogPosts" && (
+      <RecentEntries
+        collection="blogPosts"
+        limit={5}
+        excludeId={entry.id}
+        header="See other articles:"
+        Item={EntryCard}
+        getItemProps={(post) => ({ seriesInfo: getInfo(post) })}
+      />
+    )
+  }
+</Base>

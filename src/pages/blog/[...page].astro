@@ -1,36 +1,82 @@
 ---
 import { getCollection } from "astro:content";
-import config from '../../config.mjs';
-
-
+import config from "../../config.mjs";
 import Base from "../../layouts/Base.astro";
-import Post from "../../components/blog/Post.astro";
+import EntryCard from "../../components/general/EntryCard.astro";
+import type { CollectionEntry } from "astro:content";
+import { createSeriesInfoGetter, isPubliclyVisible } from "../../utils/post";
 
-export async function getStaticPaths({paginate}) {
-    const blogEntries = (await getCollection('blog', ({ data }) => {
-        return true;
-    })).sort(
-        (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-    );
+export async function getStaticPaths({ paginate }) {
+  // Get both regular blog posts and series posts
+  const [blogPosts, seriesPosts] = await Promise.all([
+    getCollection("blogPosts"),
+    getCollection("seriesPosts"),
+  ]);
 
-    return paginate(blogEntries, { pageSize: config.postsPerPage });
+  // Combine and filter using isPubliclyVisible
+  const blogEntries = [...blogPosts, ...seriesPosts]
+    .filter(isPubliclyVisible)
+    .sort((a, b) => {
+      const aDate = a.data.pubDate ? a.data.pubDate.valueOf() : 0;
+      const bDate = b.data.pubDate ? b.data.pubDate.valueOf() : 0;
+      return bDate - aDate;
+    });
+
+  return paginate(blogEntries, { pageSize: config.postsPerPage });
 }
 
-const { page } = Astro.props;
----
-<Base>
-    <section class="container mx-auto max-w-screen-lg px-7 py-10">
-        {
-            page.data.map((post, index) => {
-                return <Post postData={post} num={index} />;
-            })
-        }
-        <div class="flex flex-row justify-center gap-7">
-            {page.url.prev ? <a href={page.url.prev} class="text-[16px] bg-transparent border-pacamara-secondary border-[1px] leading-none rounded-full py-3 px-5 text-pacamara-secondary hover:bg-pacamara-accent hover:border-pacamara-accent hover:text-pacamara-white transition-all duration-300">Previous</a> : null}
-            {page.url.next ? <a href={page.url.next} class="text-[16px] bg-transparent border-pacamara-secondary border-[1px] leading-none rounded-full py-3 px-5 text-pacamara-secondary hover:bg-pacamara-accent hover:border-pacamara-accent hover:text-pacamara-white transition-all duration-300">Next</a> : null}
-        </div>
-        
-    </section>
+const { page } = Astro.props as {
+  page: import("astro").Page<
+    CollectionEntry<"blogPosts"> | CollectionEntry<"seriesPosts">
+  >;
+};
 
-    
+// Preload all blog-related entries for series info
+const [allSeriesPosts, allSeriesMeta] = await Promise.all([
+  getCollection("seriesPosts"),
+  getCollection("seriesMeta"),
+]);
+
+const getInfo = createSeriesInfoGetter(allSeriesPosts, allSeriesMeta);
+---
+
+<Base>
+  <section class="container mx-auto max-w-screen-lg px-7 py-10">
+    <div class="prose lg:prose-xl dark:prose-invert mb-8">
+      <h1>Blog</h1>
+    </div>
+
+    {
+      page.data.map((post) => (
+        <EntryCard
+          entry={post}
+          seriesInfo={getInfo(post)}
+          showCollectionLabel
+        />
+      ))
+    }
+
+    <div class="flex flex-row justify-center gap-7">
+      {
+        page.url.prev ? (
+          <a
+            href={page.url.prev}
+            class="text-[16px] bg-transparent border-cosmos-secondary border-[1px] leading-none rounded-full py-3 px-5 text-cosmos-secondary hover:bg-cosmos-accent hover:border-cosmos-accent hover:text-cosmos-white transition-all duration-300"
+          >
+            Previous
+          </a>
+        ) : null
+      }
+      {
+        page.url.next ? (
+          <a
+            href={page.url.next}
+            class="text-[16px] bg-transparent border-cosmos-secondary border-[1px] leading-none rounded-full py-3 px-5 text-cosmos-secondary hover:bg-cosmos-accent hover:border-cosmos-accent hover:text-cosmos-white transition-all duration-300"
+          >
+            Next
+          </a>
+        ) : null
+      }
+    </div>
+  </section>
 </Base>

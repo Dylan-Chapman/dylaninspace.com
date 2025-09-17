@@ -1,0 +1,74 @@
+---
+// pages/blog/series/[...page].astro
+
+import type { Page } from "astro";
+import { loadSeriesCollections } from "../../../utils/post";
+import { makeSeries } from "../../../utils/series";
+import config from "../../../config.mjs";
+import Base from "../../../layouts/Base.astro";
+import Pagination from "../../../components/general/Pagination.astro";
+
+interface SeriesItem {
+  key: string;
+  title: string;
+  description: string | undefined;
+  url: string;
+  planned: number;
+  published: number;
+}
+
+export async function getStaticPaths({ paginate }) {
+  const { allSeriesPosts, allSeriesMeta } = await loadSeriesCollections();
+  const series = makeSeries(allSeriesPosts, allSeriesMeta);
+
+  const items: SeriesItem[] = allSeriesMeta.map((e) => {
+    const key = e.id.split("/")[0];
+    if (!key) {
+      throw new Error(`Unable to extract series key from ${e.id}`);
+    }
+    const list = series.list(key);
+    return {
+      key,
+      title: (list?.title ?? (e.data.title as string)) as string,
+      description: (list?.description ?? (e.data as any).description) as
+        | string
+        | undefined,
+      url: `/blog/series/${key}/`,
+      planned: list?.planned ?? (e.data as any).parts?.length ?? 0,
+      published: list?.published ?? 0,
+    };
+  });
+
+  const sortedItems = items.sort((a, b) => a.title.localeCompare(b.title));
+
+  return paginate(sortedItems, { pageSize: config.postsPerPage });
+}
+
+const { page } = Astro.props as { page: Page<SeriesItem> };
+---
+
+<Base>
+  <section class="container mx-auto max-w-screen-lg px-7 py-10">
+    <div class="prose lg:prose-xl dark:prose-invert">
+      <h1>Series</h1>
+      <ul>
+        {
+          page.data.map((it) => (
+            <li>
+              <a href={it.url}>{it.title}</a>
+              {it.description && (
+                <p class="mt-1 opacity-80">{it.description}</p>
+              )}
+              <p class="mt-2 text-sm opacity-60">
+                {it.published} of {it.planned} part{it.planned === 1 ? "" : "s"}{" "}
+                published
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <Pagination page={page} />
+  </section>
+</Base>

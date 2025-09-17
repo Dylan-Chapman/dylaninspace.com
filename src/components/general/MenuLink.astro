@@ -1,0 +1,21 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"a"> {
+  href: string;
+}
+
+const { href, class: className, ...rest } = Astro.props as Props;
+---
+
+<a
+  href={href}
+  {...rest}
+  class:list={[
+    "menu-link opacity-60 text-cosmos-primary hover:opacity-100 hover:text-cosmos-accent transition-all duration-300 dark:text-white dark:hover:text-cosmos-accent",
+    className,
+  ]}
+>
+  <slot name="icon" />
+  <slot />
+</a>

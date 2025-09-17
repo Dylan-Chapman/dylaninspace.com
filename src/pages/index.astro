@@ -1,12 +1,27 @@
 ---
 import Base from "../layouts/Base.astro";
 import Welcome from "../components/general/Welcome.astro";
-import LatestPosts from "../components/blog/LatestPosts.astro";
+import RecentEntries from "../components/general/RecentEntries.astro";
+import EntryCard from "../components/general/EntryCard.astro";
+import config from "../config.mjs";
+import {
+  createSeriesInfoGetter,
+  loadSeriesCollections,
+} from "../utils/post";
+
+// Preload blog-related series data so cards render synchronously
+const { allSeriesPosts, allSeriesMeta } = await loadSeriesCollections();
+const getInfo = createSeriesInfoGetter(allSeriesPosts, allSeriesMeta);
 ---
 
 <Base>
-	<main>
-		<Welcome />
-		<LatestPosts />
-	</main>
+  <main>
+    <Welcome />
+    <RecentEntries
+      collections={["blogPosts", "seriesPosts", "astrophotography"]}
+      limit={config.latestPosts}
+      Item={EntryCard}
+      getItemProps={(post) => ({ seriesInfo: getInfo(post), showCollectionLabel: true })}
+    />
+  </main>
 </Base>

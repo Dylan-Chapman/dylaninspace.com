@@ -1,0 +1,91 @@
+---
+import { getCollection } from "astro:content";
+import { isPubliclyVisible } from "../../utils/post";
+import type { PostCollectionEntry, PostCollectionKey } from "../../utils/types";
+
+type CollectionKey = PostCollectionKey;
+type Entry = PostCollectionEntry;
+
+interface Props {
+  collection?: CollectionKey;
+  collections?: CollectionKey[];
+  limit?: number;
+  excludeId?: string;
+  filter?: (entry: Entry) => boolean;
+  sortBy?: (a: Entry, b: Entry) => number;
+  class?: string;
+  header?: string;
+  includeDrafts?: boolean;
+  showIfEmpty?: boolean;
+  Item?: any;
+  getItemProps?: (entry: Entry, index: number) => Record<string, unknown>;
+}
+
+const {
+  collection,
+  collections,
+  limit = 3,
+  excludeId,
+  filter,
+  sortBy,
+  class: className = "container mx-auto max-w-screen-lg px-7 py-10 mb-10",
+  header,
+  includeDrafts = false,
+  showIfEmpty = false,
+  Item,
+  getItemProps,
+} = Astro.props as Props;
+
+const collectionList = collections ?? (collection ? [collection] : []);
+if (collectionList.length === 0) {
+  throw new Error("RecentEntries requires at least one collection.");
+}
+
+const loadedEntries = await Promise.all(
+  collectionList.map((key) => getCollection(key))
+);
+
+const mergedEntries = loadedEntries.flat() as Entry[];
+
+const entries = mergedEntries
+  .filter((entry) => (excludeId ? entry.id !== excludeId : true))
+  .filter((entry) => (filter ? filter(entry) : true))
+  .filter((entry) => includeDrafts || isPubliclyVisible(entry))
+  .sort(
+    sortBy ??
+      ((a: Entry, b: Entry) => {
+        const aDate = (a.data as any).pubDate?.valueOf?.();
+        const bDate = (b.data as any).pubDate?.valueOf?.();
+
+        if (aDate && bDate) {
+          return bDate - aDate;
+        }
+
+        if (aDate && !bDate) return -1;
+        if (!aDate && bDate) return 1;
+
+        const aTitle = (a.data as any).title || a.id;
+        const bTitle = (b.data as any).title || b.id;
+
+        return String(aTitle).localeCompare(String(bTitle));
+      })
+  )
+  .slice(0, limit);
+---
+
+
+{
+  (showIfEmpty || entries.length > 0) && (
+    <section class={className}>
+      {header && (
+        <h2 class="container mx-auto max-w-screen-lg px-7 text-xl font-bold mb-7">
+          {header}
+        </h2>
+      )}
+      {entries.map((entry, index) => {
+        const extra = getItemProps ? getItemProps(entry, index) : {};
+        return Item ? <Item entry={entry} index={index} {...extra} /> : null;
+      })}
+    </section>
+  )
+}

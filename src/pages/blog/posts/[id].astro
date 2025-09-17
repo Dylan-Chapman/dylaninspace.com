@@ -1,0 +1,21 @@
+---
+import { getStaticPathsForCollection } from "../../../utils/paths";
+import {
+  createSeriesInfoGetter,
+  isPubliclyVisible,
+  loadSeriesCollections,
+} from "../../../utils/post";
+import PostLayout from "../../../layouts/PostLayout.astro";
+
+export async function getStaticPaths() {
+  return getStaticPathsForCollection("blogPosts", isPubliclyVisible);
+}
+
+const { entry } = Astro.props;
+
+const { allSeriesPosts, allSeriesMeta } = await loadSeriesCollections();
+const getSeriesInfo = createSeriesInfoGetter(allSeriesPosts, allSeriesMeta);
+const seriesInfo = getSeriesInfo(entry);
+---
+
+<PostLayout entry={entry} seriesInfo={seriesInfo} />

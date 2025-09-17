@@ -1,0 +1,75 @@
+---
+title: "Rosette Nebula"
+
+designations:
+  common: ["Rosette Nebula", "Skull Nebula (informal)"]
+  ngc: ["NGC 2237", "NGC 2238", "NGC 2239", "NGC 2244", "NGC 2246"]
+  caldwell: ["Caldwell 49"]
+  sharpless: ["Sh2-275"]
+  other: ["CTB 21", "LBN 948", "LBN 949", "LBN 206.39-01.87", "3C 163"]
+
+gear:
+  scope: "AT115EDT"
+  camera: "ASI1600MM Pro"
+  mount: "Atlas EQ-G"
+  guider: "ASI290MM Mini"
+  filters: ["Chroma 3nm SII", "Astrodon 5nm H-a", "Chroma 3nm OIII"]
+  accessories:
+    [
+      "ZWO Off Axis Guider",
+      "ZWO Electronic Automatic Focuser",
+      "ZWO Electronic Filter Wheel",
+      "HeaterDream3 Dew Heater",
+    ]
+
+acquisition:
+  location: "Stillwater, OK (backyard)"
+  nights:
+    [2023-01-08, 2023-01-09, 2023-01-10, 2023-01-13, 2023-01-14, 2023-01-16]
+  cameraSettings:
+    gain: "SHO: 50, RGB: 0"
+    offset: "15"
+    temperatureC: -15
+    binning: "1x1"
+
+frames:
+  - channel: "S"
+    subs: 33
+    exposureSeconds: 600
+  - channel: "H"
+    subs: 35
+    exposureSeconds: 600
+  - channel: "O"
+    subs: 34
+    exposureSeconds: 600
+  - channel: "R"
+    subs: 44
+    exposureSeconds: 90
+  - channel: "G"
+    subs: 42
+    exposureSeconds: 90
+  - channel: "B"
+    subs: 42
+    exposureSeconds: 90
+
+calibration:
+  darks: "50 per exposure duration"
+  flats: "25 per calibration"
+  flatDarks: "25 per calibration"
+
+tag: "nebula"
+distanceLy: 5000
+sizeLy: 130
+fovDegrees: 1.3
+
+software: ["N.I.N.A.", "GS Server", "PHD2", "PixInsight"]
+
+image: ./rosette.jpg
+pubDate: 2025-08-25
+---
+
+First image getting posted with the new telescope! Been working on a couple other projects with it but haven't gotten around to posting them yet. Would have loved to get more time on this target, but it being somewhat low in the south means it gets cut off from my view around midnight, so getting data takes a lot longer. Really enjoyed working on this one though - it's a beautiful area of the sky.
+
+Located approximately 5,000 light years away and spanning 130 light years across, the Rosette Nebula is a large cloud of gas and dust containing around 10,000 Suns worth of material. It spans 1.3 degrees, or a bit over two times the size of the full Moon, in our night sky. At the center of this nebula lies the open cluster NGC 2244 containing thousands of stars that have recently, i.e. in the last 5 million years, formed from its material. Among these stars are two incredibly massive O-type stars whose intense winds and radiation have created the central cavity and given the nebula its overall appearance. These two stars are both over 400,000 times as bright and over 50 times more massive than the Sun. Apparently the Rosette Nebula is the official Oklahoma state astronomical object as of 2019!
+
+This image shows the ionized sulfur in the region mapped to red, hydrogen to orange, and oxygen to blue. Stars are shown in true RGB color.

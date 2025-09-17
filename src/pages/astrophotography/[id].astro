@@ -1,0 +1,12 @@
+---
+import { getStaticPathsForCollection } from "../../utils/paths";
+import PostLayout from "../../layouts/PostLayout.astro";
+
+export async function getStaticPaths() {
+  return getStaticPathsForCollection("astrophotography");
+}
+
+const { entry } = Astro.props;
+---
+
+<PostLayout entry={entry} />

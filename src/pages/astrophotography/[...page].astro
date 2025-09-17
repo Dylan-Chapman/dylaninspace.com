@@ -1,0 +1,32 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import type { Page } from "astro";
+import config from "../../config.mjs";
+
+import Base from "../../layouts/Base.astro";
+import EntryCard from "../../components/general/EntryCard.astro";
+import Pagination from "../../components/general/Pagination.astro";
+
+export async function getStaticPaths({ paginate }) {
+  const apEntries = (await getCollection("astrophotography")).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+  return paginate(apEntries, { pageSize: config.postsPerPage });
+}
+
+const { page } = Astro.props as {
+  page: Page<CollectionEntry<"astrophotography">>;
+};
+---
+
+<Base>
+  <section class="container mx-auto max-w-screen-lg px-7 py-10">
+    {
+      page.data.map((post) => (
+        <EntryCard entry={post} seriesInfo={{ isSeries: false }} />
+      ))
+    }
+
+    <Pagination page={page} />
+  </section>
+</Base>

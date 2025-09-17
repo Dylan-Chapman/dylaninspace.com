@@ -1,0 +1,88 @@
+---
+import { Image } from "astro:assets";
+import { getCardImage } from "../../utils/images";
+import { getEntryHref, getSeriesHref } from "../../utils/paths";
+import type { PostCollectionEntry, SeriesInfo } from "../../utils/types";
+
+interface Props {
+  entry: PostCollectionEntry;
+  seriesInfo: SeriesInfo;
+  hideSeriesInfo?: boolean;
+  showCollectionLabel?: boolean;
+}
+const {
+  entry,
+  seriesInfo,
+  hideSeriesInfo = false,
+  showCollectionLabel = false,
+} = Astro.props as Props;
+const { data } = entry;
+const href = getEntryHref(entry);
+const cardImage = getCardImage(entry);
+const collectionLabels: Record<PostCollectionEntry["collection"], string> = {
+  blogPosts: "Post",
+  seriesPosts: "Series",
+  astrophotography: "Astrophotography",
+  page: "Page",
+};
+const collectionLabel = showCollectionLabel
+  ? collectionLabels[entry.collection] ?? entry.collection
+  : null;
+const seriesInfoMarginClass = collectionLabel ? "mt-[-0.5rem]" : "mt-[-1.5rem]";
+---
+
+<article
+  class="group lg:mb-[50px] mb-10 last:mb-0 prose lg:prose-xl max-w-none prose-headings:font-bold prose-headings:text-cosmos-accent prose-p:text-cosmos-primary/70 lg:prose-p:text-[18px] prose-p:transition-all prose-p:duration-300 prose-a:font-semibold prose-a:text-cosmos-dark prose-a:hover:text-cosmos-pink prose-a:no-underline prose-a:transition-all prose-a:duration-300 prose-strong:font-normal prose-headings:font-cosmos-space prose-h2:mb-7 prose-h2:mt-0 prose-img:mt-0 prose-img:mb-0 dark:prose-a:text-white dark:prose-a:hover:text-cosmos-accent dark:prose-p:text-white/70"
+>
+  <div
+    class="grid grid-cols-1 lg:grid-cols-[200px_auto] md:grid-cols-[200px_auto] gap-10 items-center"
+  >
+    {
+      cardImage && (
+        <div class="post_image">
+          <a href={href}>
+            <Image
+              src={cardImage}
+              width="300"
+              format="avif"
+              quality={90}
+              alt={data.title + " Thumbnail"}
+              class:list={["rounded-[15px] object-cover h-[200px]"]}
+            />
+          </a>
+        </div>
+      )
+    }
+    <div class="post_intro">
+      {
+        collectionLabel && (
+          <span class="inline-block mb-3 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-cosmos-accent/80 bg-cosmos-accent/10 rounded-full">
+            {collectionLabel}
+          </span>
+        )
+      }
+      <h2>
+        <a href={href} class="text-cosmos-dark hover:text-cosmos-accent">
+          {data.title}
+        </a>
+      </h2>
+
+      {
+        seriesInfo.isSeries && !hideSeriesInfo && (
+          <p class={`text-sm italic ${seriesInfoMarginClass} mb-4`}>
+            Post {seriesInfo.index} of {seriesInfo.planned} in{" "}
+            <a href={getSeriesHref(seriesInfo.key)}>{seriesInfo.title}</a> -{" "}
+            {seriesInfo.published} published, {seriesInfo.upcoming} upcoming.
+          </p>
+        )
+      }
+
+      {"intro" in data && <p>{data.intro}</p>}
+    </div>
+  </div>
+
+  <div
+    class="w-full h-[1px] mt-10 lg:mt-[50px] overflow-hidden gradient-line group-last:hidden"
+  >
+  </div>
+</article>
