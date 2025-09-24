@@ -1,0 +1,142 @@
+---
+import { Image } from "astro:assets";
+import { getCardImage } from "../../utils/images";
+import { getSeriesHref } from "../../utils/paths";
+import { formatSeriesProgressSummary } from "../../utils/seriesCopy";
+import type { SeriesList, SeriesPostEntry } from "../../utils/types";
+import defaultCardImage from "../../assets/default.png";
+
+interface Props {
+  series: SeriesList;
+  entries: SeriesPostEntry[];
+}
+
+const { series, entries } = Astro.props as Props;
+
+const href = getSeriesHref(series.key);
+const publishedEntries = entries;
+const previewEntries =
+  publishedEntries.length > 0 ? [...publishedEntries].slice(-3) : [];
+const previewImages =
+  previewEntries.length > 0
+    ? previewEntries.map((entry) => ({
+        meta: getCardImage(entry),
+        alt: `${entry.data.title} Thumbnail`,
+      }))
+    : [
+        {
+          meta: defaultCardImage,
+          alt: `${series.title} series placeholder`,
+        },
+      ];
+
+const extraCount = Math.max(series.published - previewEntries.length, 0);
+const partPreviews = series.parts.slice(0, 3);
+const remainingParts = Math.max(series.parts.length - partPreviews.length, 0);
+---
+
+<article
+  class="series-card not-prose rounded-[32px] bg-white/5 ring-1 ring-white/10 p-8 lg:p-10 mb-12 last:mb-0"
+>
+  <div class="grid gap-8 lg:grid-cols-[minmax(0,240px)_1fr] items-start">
+    <a
+      href={href}
+      class="group relative block"
+      aria-label={`Explore the ${series.title} series`}
+    >
+      <div
+        class="flex h-56 w-full max-w-[260px] items-center justify-center -space-x-16"
+      >
+        {
+          previewImages.map((image, index) => (
+            <div
+              class:list={[
+                "overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-lg transition-transform duration-300",
+                index === 0
+                  ? "z-30 group-hover:-translate-y-1"
+                  : index === 1
+                  ? "z-20 hidden sm:block group-hover:-translate-y-2"
+                  : "z-10 hidden lg:block group-hover:-translate-y-3",
+              ]}
+            >
+              <Image
+                src={image.meta}
+                width="220"
+                height="260"
+                format="avif"
+                quality={90}
+                alt={image.alt}
+                class:list={["h-full w-[170px] object-cover"]}
+              />
+            </div>
+          ))
+        }
+      </div>
+      {
+        extraCount > 0 && (
+          <span class="absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white/80">
+            +{extraCount} more
+          </span>
+        )
+      }
+    </a>
+
+    <div class="flex flex-col gap-4 text-white/80">
+      <h2 class="text-3xl font-cosmos-space font-bold leading-tight text-white">
+        <a
+          href={href}
+          class="transition-colors hover:text-cosmos-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cosmos-accent"
+        >
+          {series.title}
+        </a>
+      </h2>
+      {
+        series.description && (
+          <p class="text-base text-white/70">{series.description}</p>
+        )
+      }
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.35em] text-white/60"
+      >
+        {formatSeriesProgressSummary(series)}
+      </p>
+      <ul class="mt-2 flex flex-col gap-2 text-sm">
+        {
+          partPreviews.map((part) => (
+            <li
+              class:list={[
+                "flex items-start gap-3 rounded-2xl bg-white/5 px-4 py-3",
+                part.published ? "text-white" : "text-white/60",
+              ]}
+            >
+              <span
+                class:list={[
+                  "flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold",
+                  part.published
+                    ? "border-cosmos-accent/40 bg-cosmos-accent/10 text-cosmos-accent/90"
+                    : "border-white/20 bg-transparent text-white/50",
+                ]}
+              >
+                {String(part.position).padStart(2, "0")}
+              </span>
+              <div class="flex flex-col">
+                <span class="font-semibold text-white">{part.title}</span>
+                <span class="text-[0.6rem] uppercase tracking-[0.35em] text-white/40">
+                  {part.published ? "Published" : "Planned"}
+                </span>
+              </div>
+            </li>
+          ))
+        }
+        {
+          remainingParts > 0 && (
+            <li class="rounded-2xl border border-dashed border-white/20 px-4 py-3 text-[0.6rem] uppercase tracking-[0.35em] text-white/50">
+              +{remainingParts} more part{remainingParts === 1 ? "" : "s"}{" "}
+              planned
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+</article>

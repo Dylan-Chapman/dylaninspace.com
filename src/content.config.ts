@@ -25,15 +25,15 @@ const commonFields = ({ image }) => ({
 // Additional fields for post-like content (blog posts, series posts, astrophotography)
 const postFields = ({ image }) => ({
   ...commonFields({ image }),
+  intro: optionalString(),
   tag: optionalString(),
   draft: z.boolean().default(false),
-  pubDate: z.coerce.date().optional(), // Optional for blog, required for astrophotography
+  pubDate: z.coerce.date().optional(),
 });
 
 // Page-specific fields
 const pageFields = ({ image }) => ({
   ...commonFields({ image }),
-  intro: optionalString(),
   type: optionalString(),
 });
 
@@ -75,8 +75,6 @@ const astrophotography = defineCollection({
   schema: ({ image }) =>
     z.object({
       ...postFields({ image }),
-      pubDate: z.coerce.date(), // Override to make required
-      // All your astrophotography-specific fields
       designations: z
         .object({
           common: stringArray(),
@@ -147,4 +145,3 @@ export const collections = {
   astrophotography,
   page,
 };
-

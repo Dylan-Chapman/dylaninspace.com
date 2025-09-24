@@ -15,10 +15,10 @@ module.exports = {
         "cosmos-space": ['"Space Grotesk"', "sans-serif"],
       },
       colors: {
-        "cosmos-primary": "#003049",
-        "cosmos-secondary": "#B2A4FF",
-        "cosmos-accent": "#FFB4B4",
-        "cosmos-dark": "#000E14",
+        "cosmos-primary": "#221F3B",
+        "cosmos-secondary": "#4A6CF7",
+        "cosmos-accent": "#FF5C8A",
+        "cosmos-dark": "#050D1F",
         "cosmos-white": "#ffffff",
       },
       aspectRatio: {

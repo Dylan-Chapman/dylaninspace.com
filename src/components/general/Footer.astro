@@ -1,11 +1,10 @@
 ---
-import config from "../../config.mjs";
-import SocialIcon from "./SocialIcon.astro";
+import GradientDivider from "./GradientDivider.astro";
 ---
 
-<div class="w-full h-[1px] overflow-hidden gradient-line"></div>
+<GradientDivider />
 <div
-  class="py-14 transition-all duration-300 bg-gradient-to-r from-cosmos-secondary/10 to-cosmos-accent/10 dark:bg-gradient-to-r dark:from-cosmos-accent/[2%] dark:to-cosmos-secondary/[5%]"
+  class="py-14 transition-colors duration-300 bg-gradient-to-r from-cosmos-accent/10 to-cosmos-secondary/20"
 >
   <footer
     class="container mx-auto max-w-screen-xl flex flex-initial lg:flex-row flex-col gap-10 items-center px-7"

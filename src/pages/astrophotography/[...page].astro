@@ -4,8 +4,9 @@ import type { Page } from "astro";
 import config from "../../config.mjs";
 
 import Base from "../../layouts/Base.astro";
-import EntryCard from "../../components/general/EntryCard.astro";
+import BlogEntryCard from "../../components/general/BlogEntryCard.astro";
 import Pagination from "../../components/general/Pagination.astro";
+import Breadcrumbs from "../../components/general/Breadcrumbs.astro";
 
 export async function getStaticPaths({ paginate }) {
   const apEntries = (await getCollection("astrophotography")).sort(
@@ -17,16 +18,23 @@ export async function getStaticPaths({ paginate }) {
 const { page } = Astro.props as {
   page: Page<CollectionEntry<"astrophotography">>;
 };
+
+const breadcrumbs = [
+  { label: "Home", href: "/" },
+  { label: "Astrophotography" },
+];
 ---
 
 <Base>
   <section class="container mx-auto max-w-screen-lg px-7 py-10">
+    <Breadcrumbs items={breadcrumbs} class="mb-6" />
     {
       page.data.map((post) => (
-        <EntryCard entry={post} seriesInfo={{ isSeries: false }} />
+        <BlogEntryCard entry={post} seriesInfo={{ isSeries: false }} />
       ))
     }
 
     <Pagination page={page} />
   </section>
 </Base>
+

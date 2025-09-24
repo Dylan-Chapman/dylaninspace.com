@@ -9,31 +9,12 @@ const { postData } = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
-    <script is:inline>
-      const setDarkMode = () => {
-        if (
-          localStorage.darkMode === "true" ||
-          (!("darkMode" in localStorage) &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches)
-        ) {
-          document.documentElement.classList.add("dark");
-          localStorage.darkMode = "true";
-        } else {
-          document.documentElement.classList.remove("dark");
-          localStorage.darkMode = "false";
-        }
-      };
-
-      setDarkMode();
-      // Runs on view transitions navigation
-      document.addEventListener("astro:after-swap", setDarkMode);
-    </script>
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="view-transition" content="same-origin" />
+    <meta name="color-scheme" content="dark" />
     <link
       rel="alternate"
       type="application/rss+xml"
@@ -74,9 +55,7 @@ const { postData } = Astro.props;
     <ClientRouter />
   </head>
 
-  <body
-    class="font-cosmos-inter transition-all duration-300 bg-white dark:bg-cosmos-dark text-cosmos-dark dark:text-cosmos-white"
-  >
+  <body class="font-cosmos-inter bg-cosmos-dark text-cosmos-white transition-colors duration-300">
     <Header />
     <slot />
 

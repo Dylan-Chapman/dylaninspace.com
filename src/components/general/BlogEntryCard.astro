@@ -1,0 +1,93 @@
+---
+import { Image } from "astro:assets";
+import EntryCard from "./EntryCard.astro";
+import Chip from "./Chip.astro";
+import SeriesAttribution from "./SeriesAttribution.astro";
+import { getCardImage } from "../../utils/images";
+import { getEntryHref } from "../../utils/paths";
+import type { PostCollectionEntry, SeriesInfo } from "../../utils/types";
+
+interface Props {
+  entry: PostCollectionEntry;
+  seriesInfo: SeriesInfo;
+  hideSeriesInfo?: boolean;
+  showCollectionLabel?: boolean;
+  partLabel?: string | null;
+}
+
+const {
+  entry,
+  seriesInfo,
+  hideSeriesInfo = false,
+  showCollectionLabel = false,
+  partLabel = null,
+} = Astro.props as Props;
+
+const { data } = entry;
+const href = getEntryHref(entry);
+const cardImage = getCardImage(entry);
+
+const collectionLabels: Record<PostCollectionEntry["collection"], string> = {
+  blogPosts: "Post",
+  seriesPosts: "Series",
+  astrophotography: "Astrophotography",
+  page: "Page",
+};
+
+const collectionLabel = showCollectionLabel
+  ? collectionLabels[entry.collection] ?? entry.collection
+  : null;
+
+const intro = "intro" in data ? (data.intro as string) : null;
+const showPartChip = Boolean(partLabel);
+const showSeriesMeta = seriesInfo.isSeries && !hideSeriesInfo;
+---
+
+<EntryCard href={href} title={data.title}>
+  {
+    cardImage && (
+      <a
+      slot="image"
+      href={href}
+      class="group relative block h-full w-full"
+    >
+        <Image
+          src={cardImage}
+          width="300"
+          format="avif"
+          quality={90}
+          alt={`${data.title} Thumbnail`}
+          class:list={["rounded-[15px] object-cover h-[200px]"]}
+        />
+      </a>
+    )
+  }
+
+  {collectionLabel && (
+    <Chip slot="chips" variant="accent" size="sm">
+      {collectionLabel}
+    </Chip>
+  )}
+
+  {showPartChip && (
+    <Chip
+      slot="chips"
+      size="xs"
+      variant="custom"
+      class="bg-white/5 text-white/70"
+    >
+      {partLabel}
+    </Chip>
+  )}
+
+  {
+    showSeriesMeta && (
+      <p slot="meta" class="text-sm italic text-white/70">
+        <SeriesAttribution seriesInfo={seriesInfo} />
+      </p>
+    )
+  }
+
+  {intro && <p class="text-white/80">{intro}</p>}
+</EntryCard>
+

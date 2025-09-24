@@ -1,11 +1,10 @@
 ---
 import Base from "./Base.astro";
-import EntryCard from "../components/general/EntryCard.astro";
+import BlogEntryCard from "../components/general/BlogEntryCard.astro";
 import RecentEntries from "../components/general/RecentEntries.astro";
-import {
-  createSeriesInfoGetter,
-  loadSeriesCollections,
-} from "../utils/post";
+import SeriesAttribution from "../components/general/SeriesAttribution.astro";
+import Breadcrumbs from "../components/general/Breadcrumbs.astro";
+import { createSeriesInfoGetter, loadSeriesCollections } from "../utils/post";
 import { getSeriesHref } from "../utils/paths";
 import { render } from "astro:content";
 import type { PostCollectionEntry, SeriesInfo } from "../utils/types";
@@ -19,27 +18,87 @@ type Props = {
 const { entry, seriesInfo } = Astro.props;
 const { Content } = await render(entry);
 
+const showReadingMeta =
+  entry.collection === "blogPosts" || entry.collection === "seriesPosts";
+
 const { allSeriesPosts, allSeriesMeta } = await loadSeriesCollections();
 const getInfo = createSeriesInfoGetter(allSeriesPosts, allSeriesMeta);
+
+const breadcrumbs: { label: string; href?: string }[] = [
+  { label: "Home", href: "/" },
+];
+
+if (entry.collection === "blogPosts" || entry.collection === "seriesPosts") {
+  breadcrumbs.push({ label: "Blog", href: "/blog/" });
+}
+
+if (entry.collection === "seriesPosts") {
+  breadcrumbs.push({ label: "Series", href: "/blog/series/" });
+  if (seriesInfo?.isSeries) {
+    breadcrumbs.push({
+      label: seriesInfo.title,
+      href: getSeriesHref(seriesInfo.key),
+    });
+  }
+}
+
+if (entry.collection === "astrophotography") {
+  breadcrumbs.push({ label: "Astrophotography", href: "/astrophotography/" });
+}
+
+breadcrumbs.push({ label: entry.data.title });
 ---
 
 <Base postData={entry}>
-  <article class="px-7 pt-10 mx-auto w-full">
+  <article
+    class="px-7 pt-10 mx-auto w-full"
+    data-reading-article={showReadingMeta ? "true" : undefined}
+  >
+    <Breadcrumbs items={breadcrumbs} class="mb-6" />
     <HeroImage entry={entry} />
 
-    <div class="lg:px-0 pt-10 mb-5 mx-auto prose lg:prose-xl dark:prose-invert">
-      <h1>{entry.data.title}</h1>
+    <div
+      class="lg:px-0 pt-10 mb-5 mx-auto prose lg:prose-xl prose-invert [&>*:first-child]:mt-0"
+      data-reading-target
+    >
+      <h1 class="!mb-3">{entry.data.title}</h1>
       {
         seriesInfo?.isSeries && seriesInfo.title && (
-          <p class="text-sm italic">
-            This post is part {seriesInfo.index} of {seriesInfo.planned} in the
-            series{" "}
-            <a href={getSeriesHref(seriesInfo.key)}>{seriesInfo.title}</a> -{" "}
-            {seriesInfo.published} published, {seriesInfo.upcoming} upcoming.
+          <p class="text-base italic80 !mt-1 !mb-6 leading-snug">
+            <SeriesAttribution seriesInfo={seriesInfo} />
           </p>
         )
       }
-      <Content />
+      {showReadingMeta && (
+        <p
+          class="text-sm uppercase tracking-[0.35em] text-white/60 !mt-6 !mb-3"
+          data-reading-time-container
+        >
+          <span data-reading-time>Calculating read time...</span>
+        </p>
+      )}
+      {showReadingMeta && (
+        <div class="sticky top-0 z-30 mb-6" data-reading-meta>
+          <div
+            class="pointer-events-none h-1 w-full overflow-hidden rounded-full bg-white/10"
+            aria-hidden="true"
+          >
+            <div
+              class="h-full w-full origin-left bg-cosmos-accent transition-transform duration-150 ease-out"
+              role="progressbar"
+              aria-label="Reading progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+              data-reading-progress
+              style="transform: scaleX(0);"
+            />
+          </div>
+        </div>
+      )}
+      <div class="[&>*:first-child]:mt-0" data-reading-content>
+        <Content />
+      </div>
     </div>
   </article>
 
@@ -50,9 +109,135 @@ const getInfo = createSeriesInfoGetter(allSeriesPosts, allSeriesMeta);
         limit={5}
         excludeId={entry.id}
         header="See other articles:"
-        Item={EntryCard}
+        Item={BlogEntryCard}
         getItemProps={(post) => ({ seriesInfo: getInfo(post) })}
       />
     )
   }
+
+  {showReadingMeta && (
+    <script is:inline>
+      (() => {
+        const initKey = "__readingProgressCtrl";
+
+        const setup = () => {
+          const article = document.querySelector("[data-reading-article]");
+          const progress = article
+            ? article.querySelector("[data-reading-progress]")
+            : null;
+          const time = article
+            ? article.querySelector("[data-reading-time]")
+            : null;
+          const target = article
+            ? article.querySelector("[data-reading-target]")
+            : null;
+          const content = article
+            ? article.querySelector("[data-reading-content]")
+            : null;
+
+          if (!article || !progress || !content || !target) {
+            window[initKey] = undefined;
+            return;
+          }
+
+          progress.style.transform = "scaleX(0)";
+          progress.setAttribute("aria-valuenow", "0");
+
+          const computeReadTime = () => {
+            const text =
+              content.innerText || content.textContent || "";
+            const trimmed = text.trim();
+            const words = trimmed ? trimmed.split(/\s+/).length : 0;
+
+            if (!time) {
+              return;
+            }
+
+            if (words === 0) {
+              time.textContent = "";
+              time.setAttribute("aria-hidden", "true");
+              time.removeAttribute("aria-label");
+              return;
+            }
+
+            const minutes = Math.max(1, Math.round(words / 225));
+            time.textContent = `${minutes} min read`;
+            time.removeAttribute("aria-hidden");
+            time.setAttribute("aria-label", `${minutes} minute read`);
+          };
+
+          computeReadTime();
+
+          let start = 0;
+          let end = 0;
+          let ticking = false;
+
+          const recomputeBounds = () => {
+            const rect = target.getBoundingClientRect();
+            start = window.scrollY + rect.top;
+            end = start + target.offsetHeight - window.innerHeight;
+          };
+
+          const render = () => {
+            ticking = false;
+
+            if (end <= start) {
+              progress.style.transform = "scaleX(1)";
+              progress.setAttribute("aria-valuenow", "100");
+              return;
+            }
+
+            const value = (window.scrollY - start) / (end - start);
+            const clamped = Math.min(Math.max(value, 0), 1);
+            progress.style.transform = `scaleX(${clamped})`;
+            progress.setAttribute(
+              "aria-valuenow",
+              String(Math.round(clamped * 100))
+            );
+          };
+
+          const requestTick = () => {
+            if (!ticking) {
+              window.requestAnimationFrame(render);
+              ticking = true;
+            }
+          };
+
+          const onResize = () => {
+            recomputeBounds();
+            render();
+          };
+
+          recomputeBounds();
+          render();
+
+          window.addEventListener("scroll", requestTick, { passive: true });
+          window.addEventListener("resize", onResize);
+
+          window[initKey] = {
+            cleanup() {
+              window.removeEventListener("scroll", requestTick);
+              window.removeEventListener("resize", onResize);
+            },
+          };
+        };
+
+        const run = () => {
+          const previous = window[initKey];
+          if (previous && typeof previous.cleanup === "function") {
+            previous.cleanup();
+          }
+          setup();
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", run, { once: true });
+        } else {
+          run();
+        }
+
+        document.addEventListener("astro:page-load", run);
+      })();
+    </script>
+  )}
 </Base>

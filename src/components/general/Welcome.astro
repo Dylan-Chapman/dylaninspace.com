@@ -1,78 +1,43 @@
 ---
 import { Image } from "astro:assets";
-import { getEntry, render } from "astro:content";
+import GradientDivider from "./GradientDivider.astro";
 import dylan from "../../assets/dylan.jpg";
-import california from "../../assets/slide-1.jpg";
-import rosette from "../../assets/slide-2.jpg";
-import pinwheel from "../../assets/slide-3.jpg";
-import chaos from "../../assets/slide-4.jpg";
-
-interface Slide {
-  src: ImageMetadata;
-  alt: string;
-  extraClass?: string;
-}
-
-const slides: Slide[] = [
-  {
-    src: rosette,
-    alt: "Rosette Nebula in false color",
-    extraClass: "rotate-2",
-  },
-  {
-    src: pinwheel,
-    alt: "Pinwheel Galaxy in monochrome",
-    extraClass: "-rotate-1",
-  },
-  { src: california, alt: "California in false color", extraClass: "rotate-1" },
-  {
-    src: chaos,
-    alt: "Phase space visualization of a chaotic optomechanical system",
-    extraClass: "-rotate-2",
-  },
-];
-
-const aboutPage = await getEntry("page", "about-me");
-
-const { Content } = aboutPage
-  ? await render(aboutPage)
-  : { Content: () => null };
 ---
 
 <section
-  class="container mx-auto max-w-screen-lg px-7 lg:min-h-[500px] content-center font-cosmos prose md:prose-xl prose-headings:font-cosmos-space prose-headings:mt-5 prose-headings:text-cosmos-dark prose-headings:font-bold lg:prose-h1:text-7xl prose-h1:mt-0 prose-heading:transition-all prose-heading:duration-300 prose-p:text-cosmos-primary/50 dark:prose-p:text-white/70 prose-p:mb-0 prose-p:transition-all prose-p:duration-300 prose-img:mt-0 prose-img:mb-0 dark:prose-headings:text-white"
+  class="container mx-auto max-w-screen-lg px-7 lg:min-h-[500px] content-center font-cosmos prose md:prose-xl prose-headings:font-cosmos-space prose-headings:mt-5 prose-headings:text-white prose-headings:font-bold lg:prose-h1:text-7xl prose-h1:mt-0 prose-heading:transition-colors prose-heading:duration-300 prose-p:text-white/70 prose-p:mb-0 prose-p:transition-colors prose-p:duration-300 prose-img:mt-0 prose-img:mb-0 my-5"
 >
-  <div class="after:content-[''] after:block after:clear-both md:text-justify">
-    <div class="not-prose">
-      <Image
-        src={dylan}
-        width={200}
-        alt="A photo of Dylan"
-        loading="eager"
-        decoding="sync"
-        class="block w-40 sm:w-[200px] rounded-[15px] float-left mr-4"
-      />
+  <div class="grid grid-cols-1 md:grid-cols-[auto,1fr] gap-10 items-start">
+    <Image
+      src={dylan}
+      width={200}
+      alt="Picture of Dylan"
+      loading="eager"
+      decoding="sync"
+      class="w-40 sm:w-[200px] rounded-[15px]"
+    />
+
+    <div>
+      <h1>
+        <span class="gradient-underline">Welcome! I'm Dylan.</span>
+      </h1>
+      <p>
+        I'm a web developer from Oklahoma with a physics background. When I'm
+        not coding, you'll find me doing astrophotography, tinkering with 3D
+        printers, gaming, working on DIY projects around my small acreage, or
+        spending time outside with my dogs and cats.
+      </p>
+
+      <p>
+        This is my space for keeping notes, testing ideas, working through
+        whatever questions happen to grab my attention, and sharing some
+        astrophotography. I'll be writing about physics, cognition, biology,
+        computation, emergence, perception, programming. Really anything that
+        seems worth exploring. Some posts might be technical, others more
+        speculative or philosophical. We'll see where it goes.
+      </p>
     </div>
-    <Content />
   </div>
 </section>
 
-<section class="flex justify-center gap-5 sm:gap-10 overflow-hidden py-4">
-  {
-    slides.map((slide) => {
-      const classes = `relative w-28 sm:w-3/12 flex-none overflow-hidden dark:bg-cosmos-dark rounded-[15px] ${
-        slide.extraClass ?? ""
-      }`;
-      return (
-        <div class={classes}>
-          <Image
-            src={slide.src}
-            width={800}
-            alt={slide.alt}
-            class="object-cover h-[200px] md:h-[500px]"
-          />
-        </div>
-      );
-    })
-  }
-</section>
+<GradientDivider class="mt-10 lg:mt-[50px]" />

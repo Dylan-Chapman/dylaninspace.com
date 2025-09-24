@@ -1,0 +1,57 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Variant = "neutral" | "accent" | "custom";
+type Size = "xs" | "sm" | "md";
+
+type Props = HTMLAttributes<"span"> & {
+  variant?: Variant;
+  size?: Size;
+};
+
+const {
+  class: className,
+  variant = "neutral",
+  size = "sm",
+  ...rest
+} = Astro.props as Props;
+
+const baseClasses = [
+  "inline-flex",
+  "items-center",
+  "rounded-full",
+  "uppercase",
+  "font-semibold",
+  "leading-none",
+];
+
+const variantClasses: Record<Variant, string[]> = {
+  neutral: ["bg-white/10", "text-white/70"],
+  accent: ["bg-cosmos-accent/10", "text-cosmos-accent/80"],
+  custom: [],
+};
+
+const sizeClasses: Record<Size, string[]> = {
+  xs: ["px-3", "py-1.5", "text-[0.65rem]", "tracking-[0.35em]"],
+  sm: ["px-4", "py-1.5", "text-xs", "tracking-[0.25em]"],
+  md: ["px-5", "py-2", "text-sm", "tracking-[0.2em]"],
+};
+
+const extraClasses = Array.isArray(className)
+  ? className
+  : className
+  ? [className]
+  : [];
+---
+
+<span
+  class:list={[
+    ...baseClasses,
+    ...variantClasses[variant],
+    ...sizeClasses[size],
+    ...extraClasses,
+  ]}
+  {...rest}
+>
+  <slot />
+</span>

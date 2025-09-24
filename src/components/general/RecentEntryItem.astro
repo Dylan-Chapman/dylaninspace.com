@@ -1,0 +1,62 @@
+---
+import BlogEntryCard from "./BlogEntryCard.astro";
+import SeriesEntryCard from "./SeriesEntryCard.astro";
+import type {
+  PostCollectionEntry,
+  SeriesInfo,
+  SeriesList,
+  SeriesPostEntry,
+} from "../../utils/types";
+
+interface Props {
+  entry: PostCollectionEntry;
+  index: number;
+  seriesInfo: SeriesInfo;
+  useSeriesCard?: boolean;
+  seriesList?: SeriesList | null;
+  seriesEntries?: SeriesPostEntry[];
+  showCollectionLabel?: boolean;
+  partLabel?: string | null;
+  hideSeriesInfo?: boolean;
+}
+
+const {
+  entry,
+  seriesInfo,
+  useSeriesCard = false,
+  seriesList = null,
+  seriesEntries = [],
+  showCollectionLabel = false,
+  partLabel = null,
+  hideSeriesInfo = false,
+} = Astro.props as Props;
+
+const seriesInfoStrict = seriesInfo.isSeries ? seriesInfo : null;
+const isSeriesEntry =
+  useSeriesCard &&
+  Boolean(seriesInfoStrict) &&
+  entry.collection === "seriesPosts" &&
+  Boolean(seriesList);
+
+const seriesEntry = isSeriesEntry ? (entry as SeriesPostEntry) : null;
+---
+
+{
+  seriesEntry && seriesInfoStrict && seriesList ? (
+    <SeriesEntryCard
+      entry={seriesEntry}
+      seriesInfo={seriesInfoStrict}
+      seriesList={seriesList}
+      seriesEntries={seriesEntries}
+      showCollectionLabel={showCollectionLabel}
+    />
+  ) : (
+    <BlogEntryCard
+      entry={entry}
+      seriesInfo={seriesInfo}
+      hideSeriesInfo={hideSeriesInfo}
+      showCollectionLabel={showCollectionLabel}
+      partLabel={partLabel}
+    />
+  )
+}

@@ -2,16 +2,24 @@
 import Base from "../layouts/Base.astro";
 import Welcome from "../components/general/Welcome.astro";
 import RecentEntries from "../components/general/RecentEntries.astro";
-import EntryCard from "../components/general/EntryCard.astro";
+import RecentEntryItem from "../components/general/RecentEntryItem.astro";
 import config from "../config.mjs";
 import {
   createSeriesInfoGetter,
   loadSeriesCollections,
 } from "../utils/post";
+import { makeSeries } from "../utils/series";
 
 // Preload blog-related series data so cards render synchronously
 const { allSeriesPosts, allSeriesMeta } = await loadSeriesCollections();
 const getInfo = createSeriesInfoGetter(allSeriesPosts, allSeriesMeta);
+const seriesUtils = makeSeries(allSeriesPosts, allSeriesMeta);
+
+const seriesEntryMap = new Map<string, typeof allSeriesPosts[number]>();
+for (const entry of allSeriesPosts) {
+  const key = entry.id.replace(/\.(md|mdx)$/i, "").toLowerCase();
+  seriesEntryMap.set(key, entry);
+}
 ---
 
 <Base>
@@ -20,8 +28,40 @@ const getInfo = createSeriesInfoGetter(allSeriesPosts, allSeriesMeta);
     <RecentEntries
       collections={["blogPosts", "seriesPosts", "astrophotography"]}
       limit={config.latestPosts}
-      Item={EntryCard}
-      getItemProps={(post) => ({ seriesInfo: getInfo(post), showCollectionLabel: true })}
+      filter={(entry) => {
+        if (entry.collection !== "seriesPosts") return true;
+        const info = getInfo(entry);
+        return !info.isSeries || info.index === 1;
+      }}
+      Item={RecentEntryItem}
+      getItemProps={(post) => {
+        const info = getInfo(post);
+        if (info.isSeries && info.index === 1) {
+          const seriesList = seriesUtils.list(info.key);
+          const publishedEntries = seriesList
+            ? seriesList.parts
+                .filter((part) => part.published)
+                .map((part) =>
+                  seriesEntryMap.get(`${info.key}/${part.slug}`.toLowerCase())
+                )
+                .filter((entry): entry is typeof allSeriesPosts[number] => Boolean(entry))
+            : [];
+          return {
+            seriesInfo: info,
+            useSeriesCard: true,
+            seriesList,
+            seriesEntries: publishedEntries,
+            showCollectionLabel: true,
+          };
+        }
+        return {
+          seriesInfo: info,
+          showCollectionLabel: true,
+          partLabel: info.isSeries
+            ? `Part ${String(info.index).padStart(2, "0")}`
+            : undefined,
+        };
+      }}
     />
   </main>
 </Base>

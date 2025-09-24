@@ -4,6 +4,7 @@ import { render } from "astro:content";
 import { getStaticPathsForCollection } from "../utils/paths";
 import defaultImage from "../assets/default.png";
 import Base from "../layouts/Base.astro";
+import Breadcrumbs from "../components/general/Breadcrumbs.astro";
 
 export async function getStaticPaths() {
   return getStaticPathsForCollection("page");
@@ -13,14 +14,19 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 
 const image = entry.data.image ?? defaultImage;
+const breadcrumbs = [
+  { label: "Home", href: "/" },
+  { label: entry.data.title },
+];
 ---
 
 <Base postData={entry}>
   <article class="px-7 pt-10 mx-auto w-full">
+    <Breadcrumbs items={breadcrumbs} class="mb-6" />
     <div
-      class="mx-auto prose lg:prose-xl prose-headings:font-bold prose-headings:text-cosmos-dark prose-headings:mb-3"
+      class="mx-auto prose lg:prose-xl prose-headings:font-bold prose-headings:text-white prose-headings:mb-3"
     >
-      <h1 class="transition-all duration-300 dark:text-white">
+      <h1 class="text-white transition-colors duration-300">
         {entry.data.title}
       </h1>
     </div>
@@ -39,9 +45,10 @@ const image = entry.data.image ?? defaultImage;
       )
     }
     <div
-      class="lg:px-0 pt-10 mb-5 mx-auto prose lg:prose-xl prose-headings:transition-all prose-headings:duration-300 prose-headings:font-cosmos-space prose-headings:font-bold prose-headings:text-cosmos-accent prose-headings:mb-0 prose-headings:pb-3 prose-headings:mt-6 prose-p:transition-all prose-p:duration-300 prose-p:text-cosmos-primary/80 prose-li:transition-all prose-li:duration-300 prose-li:text-cosmos-primary/80 prose-td:transition-all prose-td:duration-300 prose-td:text-cosmos-primary/80 prose-a:underline prose-a:font-semibold prose-a:transition-all prose-a:duration-300 prose-a:text-cosmos-accent hover:prose-a:text-cosmos-dark prose-strong:transition-all prose-strong:duration-300 prose-strong:font-bold prose-hr:transition-all prose-hr:duration-300 prose-hr:border-cosmos-secondary/40 prose-img:rounded-lg prose-img:mx-auto prose-code:transition-all prose-code:duration-300 prose-code:text-cosmos-dark dark:prose-headings:text-cosmos-accent dark:prose-p:text-white/70 dark:prose-a:text-white dark:hover:prose-a:text-cosmos-accent dark:prose-strong:text-white dark:prose-li:text-white dark:prose-code:text-white dark:prose-td:text-white/70 dark:prose-hr:border-cosmos-accent/30 dark:prose-tr:border-cosmos-accent/30 dark:prose-thead:border-cosmos-accent/30"
+      class="lg:px-0 pt-10 mb-5 mx-auto prose lg:prose-xl prose-invert prose-headings:transition-colors prose-headings:duration-300 prose-headings:font-cosmos-space prose-headings:font-bold prose-headings:text-cosmos-accent prose-headings:mb-0 prose-headings:pb-3 prose-headings:mt-6 prose-a:underline prose-a:font-semibold prose-a:transition-colors prose-a:duration-300 prose-a:text-cosmos-accent hover:prose-a:text-white prose-strong:transition-colors prose-strong:duration-300 prose-strong:font-bold prose-hr:border-cosmos-accent/30 prose-img:rounded-lg prose-img:mx-auto prose-code:text-white prose-tr:border-cosmos-accent/30 prose-thead:border-cosmos-accent/30"
     >
       <Content />
     </div>
   </article>
 </Base>
+

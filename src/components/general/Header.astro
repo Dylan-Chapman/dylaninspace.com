@@ -1,22 +1,21 @@
 ---
-import ModeSwitch from "./ModeSwitch.astro";
 import HamburgerButton from "./HamburgerButton.astro";
 import Navigation from "./Navigation.astro";
 ---
 
 <div
-  class="navigation flex-1 hidden absolute top-0 left-0 w-full bg-cosmos-white dark:bg-cosmos-dark transition-all duration-300 p-7 pt-[112px] z-10 shadow-2xl"
+  class="navigation flex-1 hidden absolute top-0 left-0 w-full bg-cosmos-dark transition-colors duration-300 p-7 pt-[112px] z-10 shadow-2xl"
   id="navigation_wrapper"
 >
   <Navigation />
 </div>
 <header
-  class="container mx-auto max-w-screen-xl px-7 py-10 bg-white flex flex-initial flex-row gap-10 items-center justify-between transition-all duration-300 dark:bg-cosmos-dark relative z-20"
+  class="container mx-auto max-w-screen-xl px-7 py-10 bg-cosmos-dark flex flex-initial flex-row gap-10 items-center justify-between transition-colors duration-300 relative z-20"
 >
   <div class="logo flex-none">
     <a
       href="/"
-      class="font-bold font-cosmos-space text-lg hover:text-cosmos-accent transition-all duration-300 dark:text-white dark:hover:text-cosmos-accent"
+      class="font-bold font-cosmos-space text-lg text-white transition-colors duration-300 hover:text-cosmos-accent"
       >DylanInSpace</a
     >
   </div>
@@ -25,7 +24,6 @@ import Navigation from "./Navigation.astro";
   </div>
 
   <div class="relative flex flex-initial flex-row items-center gap-5">
-    <ModeSwitch />
     <HamburgerButton />
   </div>
 </header>

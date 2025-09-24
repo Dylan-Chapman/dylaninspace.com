@@ -1,0 +1,17 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"div"> & {
+  class?: string | string[];
+};
+
+const { class: className, ...restProps } = Astro.props as Props;
+const baseClasses = ["w-full", "h-[1px]", "overflow-hidden", "gradient-line"];
+const extraClasses = Array.isArray(className)
+  ? className
+  : className
+  ? [className]
+  : [];
+---
+
+<div class:list={[...baseClasses, ...extraClasses]} {...restProps}></div>

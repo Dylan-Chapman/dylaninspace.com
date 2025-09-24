@@ -48,25 +48,6 @@
       90deg,
       transparent,
       transparent 50%,
-      theme("colors.cosmos-white") 50%,
-      theme("colors.cosmos-white") 100%
-    ),
-    linear-gradient(
-      90deg,
-      theme("colors.cosmos-secondary"),
-      theme("colors.cosmos-accent")
-    );
-  background-size: var(--gradient-space) var(--gradient-height),
-    100% var(--gradient-height);
-
-  @apply transition-all duration-300 rounded-full;
-}
-
-.dark .gradient-line {
-  background-image: linear-gradient(
-      90deg,
-      transparent,
-      transparent 50%,
       theme("colors.cosmos-dark") 50%,
       theme("colors.cosmos-dark") 100%
     ),
@@ -144,3 +125,13 @@ body::-webkit-scrollbar-thumb {
   outline: 0px solid theme("colors.cosmos-accent");
   border-radius: 10px;
 }
+
+.entry-card:last-of-type .entry-card__divider {
+  display: none;
+}
+
+
+.series-stack .entry-card {
+  margin-bottom: 0;
+}
+

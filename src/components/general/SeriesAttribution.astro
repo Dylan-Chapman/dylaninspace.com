@@ -1,0 +1,44 @@
+---
+import { getSeriesHref } from "../../utils/paths";
+import {
+  formatSeriesPlacement,
+  formatSeriesProgressInline,
+} from "../../utils/seriesCopy";
+import type { SeriesInfo } from "../../utils/types";
+
+type SeriesDetails = Extract<SeriesInfo, { isSeries: true }>;
+
+interface Props {
+  seriesInfo: SeriesDetails;
+}
+
+const { seriesInfo } = Astro.props as Props;
+const progress = formatSeriesProgressInline(seriesInfo);
+const placement = formatSeriesPlacement(seriesInfo);
+const seriesLinkClasses = [
+  "text-cosmos-secondary",
+  "hover:!text-cosmos-accent",
+  "!underline",
+  "decoration-dotted",
+  "decoration-2",
+  "underline-offset-4",
+  "transition-colors",
+  "duration-200",
+  "focus-visible:outline",
+  "focus-visible:outline-2",
+  "focus-visible:outline-offset-2",
+  "focus-visible:outline-cosmos-accent",
+];
+---
+
+{placement} in{" "}
+<a href={getSeriesHref(seriesInfo.key)} class:list={seriesLinkClasses}
+  >{seriesInfo.title}</a
+>
+{
+  progress && (
+    <span class="series-attribution__progress text-white/60">
+      {progress}
+    </span>
+  )
+}

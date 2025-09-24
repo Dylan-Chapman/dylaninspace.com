@@ -1,0 +1,137 @@
+---
+import { Image } from "astro:assets";
+import Chip from "./Chip.astro";
+import EntryCard from "./EntryCard.astro";
+import { getCardImage } from "../../utils/images";
+import { getEntryHref, getSeriesHref } from "../../utils/paths";
+import {
+  formatSeriesProgressSummary,
+  formatSeriesPlacement,
+} from "../../utils/seriesCopy";
+import type {
+  SeriesInfo,
+  SeriesList,
+  SeriesPostEntry,
+} from "../../utils/types";
+
+interface Props {
+  entry: SeriesPostEntry;
+  seriesInfo: Extract<SeriesInfo, { isSeries: true }>;
+  seriesList: SeriesList;
+  seriesEntries?: SeriesPostEntry[];
+  showCollectionLabel?: boolean;
+}
+
+const {
+  entry,
+  seriesInfo,
+  seriesList,
+  seriesEntries = [],
+  showCollectionLabel = false,
+} = Astro.props as Props;
+
+const seriesHref = getSeriesHref(seriesInfo.key);
+const publishedEntries = seriesEntries.length > 0 ? seriesEntries : [entry];
+const previewEntries = publishedEntries.slice(0, 4);
+
+const collageImages = previewEntries.map((part, index) => {
+  const count = previewEntries.length;
+  const progress = count > 1 ? index / (count - 1) : 0;
+  const top = progress * 26;
+  const left = progress * 34;
+  const rotation = -6 + progress * 10;
+  const zIndex = 40 - index * 10;
+  return {
+    meta: getCardImage(part),
+    alt: `${part.data.title} Thumbnail`,
+    style: `top: ${top.toFixed(2)}%; left: ${left.toFixed(
+      2
+    )}%; transform: rotate(${rotation.toFixed(2)}deg); z-index: ${zIndex};`,
+  };
+});
+
+const extraCount = Math.max(seriesList.published - previewEntries.length, 0);
+const seriesSummary = formatSeriesProgressSummary(seriesList).replace(
+  /\.$/,
+  ""
+);
+const description =
+  seriesList.description ??
+  ("intro" in entry.data ? (entry.data.intro as string) : null);
+const firstPartHref = getEntryHref(entry);
+const firstPartLabel = formatSeriesPlacement({
+  index: seriesInfo.index,
+  planned: seriesList.planned,
+});
+const firstPartIntro =
+  "intro" in entry.data ? (entry.data.intro as string) : null;
+const showFirstPartIntro = Boolean(
+  firstPartIntro && firstPartIntro !== description
+);
+---
+
+<EntryCard href={seriesHref} title={seriesList.title}>
+  <a
+    slot="image"
+    href={seriesHref}
+    aria-label={`Explore the ${seriesList.title} series`}
+    class="group relative flex h-full w-full max-w-[240px] items-center justify-center"
+  >
+    <div class="relative h-[220px] w-[180px] sm:w-[200px]">
+      {
+        collageImages.map((image) => (
+          <div
+            class="absolute h-48 w-36 overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl transition duration-500 group-hover:shadow-2xl"
+            style={image.style}
+          >
+            <Image
+              src={image.meta}
+              width="220"
+              height="260"
+              format="avif"
+              quality={90}
+              alt={image.alt}
+              class:list={["h-full w-full object-cover"]}
+            />
+          </div>
+        ))
+      }
+    </div>
+    {
+      extraCount > 0 && (
+        <span class="absolute bottom-3 right-2 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-white/85">
+          +{extraCount}
+        </span>
+      )
+    }
+  </a>
+
+  {
+    showCollectionLabel && (
+      <Chip slot="chips" variant="accent" size="sm">
+        Series
+      </Chip>
+    )
+  }
+  <Chip
+    slot="chips"
+    size="xs"
+    variant="custom"
+    class="bg-white/5 text-white/70"
+  >
+    {seriesSummary}
+  </Chip>
+
+  {description && <p class="text-white/75">{description}</p>}
+
+  <div class="rounded-3xl bg-black/30 p-4 text-sm text-white/80">
+    <p class="text-xs uppercase tracking-[0.35em] text-white/60">Begin here</p>
+    <a
+      href={firstPartHref}
+      class="mt-1 text-lg font-semibold text-white transition-colors hover:text-cosmos-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cosmos-accent"
+    >
+      {firstPartLabel}: {entry.data.title}
+    </a>
+    {showFirstPartIntro && <p class="mt-2 text-white/70">{firstPartIntro}</p>}
+  </div>
+</EntryCard>
