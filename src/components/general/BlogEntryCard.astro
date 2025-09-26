@@ -74,7 +74,7 @@ const showSeriesMeta = seriesInfo.isSeries && !hideSeriesInfo;
       slot="chips"
       size="xs"
       variant="custom"
-      class="bg-white/5 text-white/70"
+      class="bg-cosmos-white/5 text-cosmos-white/70"
     >
       {partLabel}
     </Chip>
@@ -82,12 +82,12 @@ const showSeriesMeta = seriesInfo.isSeries && !hideSeriesInfo;
 
   {
     showSeriesMeta && (
-      <p slot="meta" class="text-sm italic text-white/70">
+      <p slot="meta" class="text-sm italic text-cosmos-white/70">
         <SeriesAttribution seriesInfo={seriesInfo} />
       </p>
     )
   }
 
-  {intro && <p class="text-white/80">{intro}</p>}
+  {intro && <p class="text-cosmos-white/80">{intro}</p>}
 </EntryCard>
 

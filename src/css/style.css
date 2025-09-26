@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 :root {
   --gradient-space: 20px;
   --gradient-height: 2px;
@@ -48,13 +53,13 @@
       90deg,
       transparent,
       transparent 50%,
-      theme("colors.cosmos-dark") 50%,
-      theme("colors.cosmos-dark") 100%
+      theme("colors.cosmos-dark.500") 50%,
+      theme("colors.cosmos-dark.500") 100%
     ),
     linear-gradient(
       90deg,
-      theme("colors.cosmos-secondary"),
-      theme("colors.cosmos-accent")
+      theme("colors.cosmos-secondary.500"),
+      theme("colors.cosmos-accent.500")
     );
   background-size: var(--gradient-space) var(--gradient-height),
     100% var(--gradient-height);
@@ -68,18 +73,18 @@
   border-bottom: 0.27em solid transparent;
   -moz-border-image: -moz-linear-gradient(
     left,
-    theme("colors.cosmos-secondary") 0%,
-    theme("colors.cosmos-accent") 100%
+    theme("colors.cosmos-secondary.500") 0%,
+    theme("colors.cosmos-accent.500") 100%
   );
   -webkit-border-image: -webkit-linear-gradient(
     left,
-    theme("colors.cosmos-secondary") 0%,
-    theme("colors.cosmos-accent") 100%
+    theme("colors.cosmos-secondary.500") 0%,
+    theme("colors.cosmos-accent.500") 100%
   );
   border-image: linear-gradient(
     to right,
-    theme("colors.cosmos-secondary") 0%,
-    theme("colors.cosmos-accent") 100%
+    theme("colors.cosmos-secondary.500") 0%,
+    theme("colors.cosmos-accent.500") 100%
   );
   border-image-slice: 1;
 
@@ -104,7 +109,7 @@
 }
 
 html {
-  scrollbar-color: theme("colors.cosmos-secondary") transparent;
+  scrollbar-color: theme("colors.cosmos-secondary.500") transparent;
   scrollbar-width: auto;
 }
 
@@ -119,10 +124,10 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
   background-image: linear-gradient(
     180deg,
-    theme("colors.cosmos-secondary"),
-    theme("colors.cosmos-accent")
+    theme("colors.cosmos-secondary.500"),
+    theme("colors.cosmos-accent.500")
   );
-  outline: 0px solid theme("colors.cosmos-accent");
+  outline: 0px solid theme("colors.cosmos-accent.500");
   border-radius: 10px;
 }
 
@@ -130,8 +135,9 @@ body::-webkit-scrollbar-thumb {
   display: none;
 }
 
-
 .series-stack .entry-card {
   margin-bottom: 0;
 }
+
+
 

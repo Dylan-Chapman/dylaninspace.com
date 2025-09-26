@@ -1,0 +1,207 @@
+---
+import "./inline-note.css";
+
+interface Props {
+  id?: string;
+  marker?: string;
+  label?: string;
+  align?: "start" | "center" | "end";
+}
+
+const {
+  id,
+  marker = "i",
+  label = `Footnote ${marker}`,
+  align = "center",
+} = Astro.props as Props;
+const noteId = id ?? `inline-note-${crypto.randomUUID()}`;
+const alignClass =
+  align === "start"
+    ? "inline-note--align-start"
+    : align === "end"
+    ? "inline-note--align-end"
+    : undefined;
+---
+
+<span
+  class:list={["inline-note", alignClass].filter(Boolean)}
+  data-inline-note
+  data-inline-note-align={align}
+  data-inline-note-open="false"
+>
+  <button
+    type="button"
+    class="inline-note__trigger"
+    aria-controls={noteId}
+    aria-expanded="false"
+    aria-haspopup="dialog"
+    aria-label={label}
+    data-inline-note-trigger
+  >
+    [{marker}]
+  </button>
+  <template data-inline-note-template>
+    <div
+      class="inline-note__card inline-note-card inline-note-card--popover"
+      id={noteId}
+      role="dialog"
+      aria-label={label}
+      aria-modal="false"
+      hidden
+    >
+      <slot />
+    </div>
+  </template>
+</span>
+
+<script is:inline>
+  (() => {
+    const controllerKey = "__inlineNoteController";
+    const selector = "[data-inline-note]";
+    const triggerSelector = "[data-inline-note-trigger]";
+    const templateSelector = "[data-inline-note-template]";
+    const triggerKey = "__inlineNoteTrigger";
+    const cardKey = "__inlineNoteCard";
+
+    const ensureCard = (note) => {
+      if (note[cardKey]) {
+        return note[cardKey];
+      }
+
+      const template = note.querySelector(templateSelector);
+      if (!(template instanceof HTMLTemplateElement)) {
+        return undefined;
+      }
+
+      const fragment = template.content.cloneNode(true);
+      const card = fragment.querySelector(".inline-note__card");
+      if (!(card instanceof HTMLElement)) {
+        return undefined;
+      }
+
+      card.hidden = true;
+      card.tabIndex = -1;
+      card.setAttribute("aria-hidden", "true");
+      note.appendChild(card);
+      note[cardKey] = card;
+      return card;
+    };
+
+    const getController = () => {
+      if (typeof window === "undefined") {
+        return undefined;
+      }
+
+      if (!window[controllerKey]) {
+        const state = {
+          notes: [],
+          closeAll(except) {
+            state.notes.forEach((note) => {
+              if (note === except) {
+                return;
+              }
+              const trigger =
+                note[triggerKey] || note.querySelector(triggerSelector);
+              const card = ensureCard(note);
+              if (trigger instanceof HTMLElement) {
+                trigger.setAttribute("aria-expanded", "false");
+              }
+              if (card instanceof HTMLElement) {
+                card.hidden = true;
+              }
+              note.dataset.inlineNoteOpen = "false";
+              note.classList.remove("is-open");
+            });
+          },
+          bind() {
+            state.notes = Array.from(document.querySelectorAll(selector));
+
+            state.notes.forEach((note) => {
+              if (note.dataset.inlineNoteBound === "true") {
+                return;
+              }
+
+              const trigger = note.querySelector(triggerSelector);
+              if (!(trigger instanceof HTMLElement)) {
+                return;
+              }
+
+              const card = ensureCard(note);
+              if (!(card instanceof HTMLElement)) {
+                return;
+              }
+
+              note.dataset.inlineNoteBound = "true";
+              note[triggerKey] = trigger;
+
+              const applyOpen = (isOpen) => {
+                const value = isOpen ? "true" : "false";
+                note.dataset.inlineNoteOpen = value;
+                trigger.setAttribute("aria-expanded", value);
+                note.classList.toggle("is-open", isOpen);
+                card.hidden = !isOpen;
+                card.setAttribute("aria-hidden", String(!isOpen));
+              };
+
+              applyOpen(note.dataset.inlineNoteOpen === "true");
+
+              trigger.addEventListener("click", (event) => {
+                event.preventDefault();
+                const isOpen = note.dataset.inlineNoteOpen === "true";
+                if (isOpen) {
+                  applyOpen(false);
+                  return;
+                }
+                state.closeAll(note);
+                applyOpen(true);
+              });
+            });
+          },
+        };
+
+        document.addEventListener("click", (event) => {
+          const target = event.target;
+          if (target instanceof Element && target.closest(selector)) {
+            return;
+          }
+          state.closeAll();
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape") {
+            return;
+          }
+          const openNote = state.notes.find(
+            (note) => note.dataset.inlineNoteOpen === "true"
+          );
+          if (!openNote) {
+            return;
+          }
+          const trigger =
+            openNote[triggerKey] || openNote.querySelector(triggerSelector);
+          state.closeAll();
+          if (trigger instanceof HTMLElement) {
+            trigger.focus();
+          }
+        });
+
+        window[controllerKey] = state;
+      }
+
+      return window[controllerKey];
+    };
+
+    const controller = getController();
+    if (controller) {
+      controller.bind();
+    }
+
+    document.addEventListener("astro:page-load", () => {
+      const refreshed = getController();
+      if (refreshed) {
+        refreshed.bind();
+      }
+    });
+  })();
+</script>
+

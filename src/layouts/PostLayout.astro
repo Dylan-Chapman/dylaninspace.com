@@ -71,7 +71,7 @@ breadcrumbs.push({ label: entry.data.title });
       }
       {showReadingMeta && (
         <p
-          class="text-sm uppercase tracking-[0.35em] text-white/60 !mt-6 !mb-3"
+          class="text-sm uppercase tracking-[0.35em] text-cosmos-dark-100 !mt-10 !mb-5"
           data-reading-time-container
         >
           <span data-reading-time>Calculating read time...</span>
@@ -80,7 +80,7 @@ breadcrumbs.push({ label: entry.data.title });
       {showReadingMeta && (
         <div class="sticky top-0 z-30 mb-6" data-reading-meta>
           <div
-            class="pointer-events-none h-1 w-full overflow-hidden rounded-full bg-white/10"
+            class="pointer-events-none h-1 w-full overflow-hidden rounded-full bg-cosmos-dark-400"
             aria-hidden="true"
           >
             <div
@@ -160,8 +160,9 @@ breadcrumbs.push({ label: entry.data.title });
               return;
             }
 
-            const minutes = Math.max(1, Math.round(words / 225));
-            time.textContent = `${minutes} min read`;
+            const wordsPerMinute = 180;
+            const minutes = Math.max(1, Math.round(words / wordsPerMinute));
+            time.textContent = `~${minutes} minutes to read at a careful pace`;
             time.removeAttribute("aria-hidden");
             time.setAttribute("aria-label", `${minutes} minute read`);
           };
@@ -241,3 +242,5 @@ breadcrumbs.push({ label: entry.data.title });
     </script>
   )}
 </Base>
+
+

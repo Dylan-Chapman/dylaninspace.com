@@ -1,0 +1,19 @@
+---import "./inline-note.css";
+
+interface Props {
+  marker?: string;
+  label?: string;
+}
+
+const { marker = "i", label = `Footnote ${marker}` } = Astro.props as Props;
+
+---
+<article class="inline-note-rollup__item">
+  <div class="inline-note-rollup__marker" aria-hidden="true">{marker}</div>
+  <div class="inline-note-rollup__card inline-note-card inline-note-card--rollup" role="group" aria-label={label}>
+    <slot />
+  </div>
+</article>
+
+
+

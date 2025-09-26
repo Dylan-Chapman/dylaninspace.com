@@ -19,7 +19,7 @@ export const stylePresets: Record<PresetName, StylePreset> = {
     widths: [480, 768, 960, 1200, 1600, 2000],
   },
   contain: {
-    wrapperClass: "w-full max-w-screen-xl mx-auto rounded-[15px] bg-black/90",
+    wrapperClass: "w-full max-w-screen-xl mx-auto rounded-[15px] bg-cosmos-dark-900/90",
     imgClass: "w-full max-h-[80vh] object-contain",
     sizes: CONTENT_SIZES,
     widths: [768, 960, 1200, 1600, 2000, 2400],
@@ -33,7 +33,7 @@ export const stylePresets: Record<PresetName, StylePreset> = {
   },
   // True full-bleed variant (honest 100vw)
   fullBleedContain: {
-    wrapperClass: "w-screen mx-[calc(50%-50vw)] bg-black/50",
+    wrapperClass: "w-screen mx-[calc(50%-50vw)] bg-cosmos-dark-900/50",
     imgClass: "w-full max-h-[90vh] object-contain",
     sizes: "100vw",
     widths: [768, 1200, 1600, 2000, 2400, 3200, 3840],

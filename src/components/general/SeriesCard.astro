@@ -36,7 +36,7 @@ const remainingParts = Math.max(series.parts.length - partPreviews.length, 0);
 ---
 
 <article
-  class="series-card not-prose rounded-[32px] bg-white/5 ring-1 ring-white/10 p-8 lg:p-10 mb-12 last:mb-0"
+  class="series-card not-prose rounded-[32px] bg-cosmos-white/5 ring-1 ring-cosmos-white/10 p-8 lg:p-10 mb-12 last:mb-0"
 >
   <div class="grid gap-8 lg:grid-cols-[minmax(0,240px)_1fr] items-start">
     <a
@@ -51,7 +51,7 @@ const remainingParts = Math.max(series.parts.length - partPreviews.length, 0);
           previewImages.map((image, index) => (
             <div
               class:list={[
-                "overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-lg transition-transform duration-300",
+                "overflow-hidden rounded-3xl border border-cosmos-white/10 bg-cosmos-white/5 shadow-lg transition-transform duration-300",
                 index === 0
                   ? "z-30 group-hover:-translate-y-1"
                   : index === 1
@@ -74,15 +74,15 @@ const remainingParts = Math.max(series.parts.length - partPreviews.length, 0);
       </div>
       {
         extraCount > 0 && (
-          <span class="absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white/80">
+          <span class="absolute bottom-3 right-3 rounded-full bg-cosmos-dark-900/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-cosmos-white/80">
             +{extraCount} more
           </span>
         )
       }
     </a>
 
-    <div class="flex flex-col gap-4 text-white/80">
-      <h2 class="text-3xl font-cosmos-space font-bold leading-tight text-white">
+    <div class="flex flex-col gap-4 text-cosmos-white/80">
+      <h2 class="text-3xl font-cosmos-space font-bold leading-tight text-cosmos-white">
         <a
           href={href}
           class="transition-colors hover:text-cosmos-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cosmos-accent"
@@ -92,11 +92,11 @@ const remainingParts = Math.max(series.parts.length - partPreviews.length, 0);
       </h2>
       {
         series.description && (
-          <p class="text-base text-white/70">{series.description}</p>
+          <p class="text-base text-cosmos-white/70">{series.description}</p>
         )
       }
       <p
-        class="text-xs font-semibold uppercase tracking-[0.35em] text-white/60"
+        class="text-xs font-semibold uppercase tracking-[0.35em] text-cosmos-white/60"
       >
         {formatSeriesProgressSummary(series)}
       </p>
@@ -105,8 +105,8 @@ const remainingParts = Math.max(series.parts.length - partPreviews.length, 0);
           partPreviews.map((part) => (
             <li
               class:list={[
-                "flex items-start gap-3 rounded-2xl bg-white/5 px-4 py-3",
-                part.published ? "text-white" : "text-white/60",
+                "flex items-start gap-3 rounded-2xl bg-cosmos-white/5 px-4 py-3",
+                part.published ? "text-cosmos-white" : "text-cosmos-white/60",
               ]}
             >
               <span
@@ -114,14 +114,14 @@ const remainingParts = Math.max(series.parts.length - partPreviews.length, 0);
                   "flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold",
                   part.published
                     ? "border-cosmos-accent/40 bg-cosmos-accent/10 text-cosmos-accent/90"
-                    : "border-white/20 bg-transparent text-white/50",
+                    : "border-cosmos-white/20 bg-transparent text-cosmos-white/50",
                 ]}
               >
                 {String(part.position).padStart(2, "0")}
               </span>
               <div class="flex flex-col">
-                <span class="font-semibold text-white">{part.title}</span>
-                <span class="text-[0.6rem] uppercase tracking-[0.35em] text-white/40">
+                <span class="font-semibold text-cosmos-white">{part.title}</span>
+                <span class="text-[0.6rem] uppercase tracking-[0.35em] text-cosmos-white/40">
                   {part.published ? "Published" : "Planned"}
                 </span>
               </div>
@@ -130,7 +130,7 @@ const remainingParts = Math.max(series.parts.length - partPreviews.length, 0);
         }
         {
           remainingParts > 0 && (
-            <li class="rounded-2xl border border-dashed border-white/20 px-4 py-3 text-[0.6rem] uppercase tracking-[0.35em] text-white/50">
+            <li class="rounded-2xl border border-dashed border-cosmos-white/20 px-4 py-3 text-[0.6rem] uppercase tracking-[0.35em] text-cosmos-white/50">
               +{remainingParts} more part{remainingParts === 1 ? "" : "s"}{" "}
               planned
             </li>

@@ -14,19 +14,16 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 
 const image = entry.data.image ?? defaultImage;
-const breadcrumbs = [
-  { label: "Home", href: "/" },
-  { label: entry.data.title },
-];
+const breadcrumbs = [{ label: "Home", href: "/" }, { label: entry.data.title }];
 ---
 
 <Base postData={entry}>
   <article class="px-7 pt-10 mx-auto w-full">
     <Breadcrumbs items={breadcrumbs} class="mb-6" />
     <div
-      class="mx-auto prose lg:prose-xl prose-headings:font-bold prose-headings:text-white prose-headings:mb-3"
+      class="mx-auto prose lg:prose-xl prose-headings:font-bold prose-headings:text-cosmos-white prose-headings:mb-3"
     >
-      <h1 class="text-white transition-colors duration-300">
+      <h1 class="text-cosmos-white transition-colors duration-300">
         {entry.data.title}
       </h1>
     </div>
@@ -45,10 +42,9 @@ const breadcrumbs = [
       )
     }
     <div
-      class="lg:px-0 pt-10 mb-5 mx-auto prose lg:prose-xl prose-invert prose-headings:transition-colors prose-headings:duration-300 prose-headings:font-cosmos-space prose-headings:font-bold prose-headings:text-cosmos-accent prose-headings:mb-0 prose-headings:pb-3 prose-headings:mt-6 prose-a:underline prose-a:font-semibold prose-a:transition-colors prose-a:duration-300 prose-a:text-cosmos-accent hover:prose-a:text-white prose-strong:transition-colors prose-strong:duration-300 prose-strong:font-bold prose-hr:border-cosmos-accent/30 prose-img:rounded-lg prose-img:mx-auto prose-code:text-white prose-tr:border-cosmos-accent/30 prose-thead:border-cosmos-accent/30"
+      class="lg:px-0 pt-10 mb-5 mx-auto prose lg:prose-xl prose-invert prose-headings:transition-colors prose-headings:duration-300 prose-headings:font-cosmos-space prose-headings:font-bold prose-headings:text-cosmos-accent prose-headings:mb-0 prose-headings:pb-3 prose-headings:mt-6 prose-a:underline prose-a:font-semibold prose-a:transition-colors prose-a:duration-300 prose-a:text-cosmos-accent hover:prose-a:text-cosmos-white prose-strong:transition-colors prose-strong:duration-300 prose-strong:font-bold prose-hr:border-cosmos-accent/30 prose-img:rounded-lg prose-img:mx-auto prose-code:text-cosmos-white prose-tr:border-cosmos-accent/30 prose-thead:border-cosmos-accent/30"
     >
       <Content />
     </div>
   </article>
 </Base>
-

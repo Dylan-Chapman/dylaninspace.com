@@ -15,8 +15,10 @@ interface Props {
 const { seriesInfo } = Astro.props as Props;
 const progress = formatSeriesProgressInline(seriesInfo);
 const placement = formatSeriesPlacement(seriesInfo);
-const seriesLinkClasses = [
-  "text-cosmos-secondary",
+const seriesLinkClasses = [
+
+  "text-cosmos-secondary",
+
   "hover:!text-cosmos-accent",
   "!underline",
   "decoration-dotted",
@@ -37,7 +39,7 @@ const seriesLinkClasses = [
 >
 {
   progress && (
-    <span class="series-attribution__progress text-white/60">
+    <span class="series-attribution__progress text-cosmos-white/60">
       {progress}
     </span>
   )
